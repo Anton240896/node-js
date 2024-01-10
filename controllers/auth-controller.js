@@ -3,7 +3,12 @@ import { HttpError } from "../helpers/index.js";
 import { ctrlWrapper } from "../decorators/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+import path from "path";
+import fs from "fs/promises";
+import Jimp from "jimp";
 
+const avatarsPath = path.resolve("public", "avatars");
 const { JWT_SECRET } = process.env;
 
 //    SIGNUP
@@ -14,7 +19,12 @@ const signup = async (req, res) => {
     throw HttpError(409, "Email in use");
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const avatarUrl = gravatar.url(email);
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarUrl,
+  });
 
   res.status(201).json({
     user: {
@@ -72,9 +82,26 @@ const signout = async (req, res) => {
   });
 };
 
+//      AVATARS
+const updateAvatar = async (req, res) => {
+  const { path: tempUpload, originalname } = req.file;
+  const resultUpload = path.join(avatarsPath, originalname);
+  await fs.rename(tempUpload, resultUpload);
+  const avatarURL = path.join("avatars", originalname);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+
+  const avatar = await Jimp.read(resultUpload);
+  avatar.resize(250, 250).writeAsync(resultUpload);
+
+  res.json({
+    avatarURL,
+  });
+};
+
 export default {
   signup: ctrlWrapper(signup),
   signin: ctrlWrapper(signin),
   getCurrent: ctrlWrapper(getCurrent),
   signout: ctrlWrapper(signout),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };

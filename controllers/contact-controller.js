@@ -1,10 +1,6 @@
 import Contact from "../models/Contact.js";
 import { HttpError } from "../helpers/index.js";
 import { ctrlWrapper } from "../decorators/index.js";
-import fs from "fs/promises";
-import path from "path";
-
-const avatarsPath = path.resolve("public", "avatars");
 
 //  GET CONTACTS
 const getAll = async (req, res) => {
