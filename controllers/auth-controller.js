@@ -8,8 +8,8 @@ import path from "path";
 import fs from "fs/promises";
 import Jimp from "jimp";
 
-const avatarsPath = path.resolve("public", "avatars");
 const { JWT_SECRET } = process.env;
+const avatarsPath = path.resolve("public", "avatars");
 
 //    SIGNUP
 const signup = async (req, res) => {
@@ -38,6 +38,7 @@ const signup = async (req, res) => {
 const signin = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
+
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
@@ -84,11 +85,13 @@ const signout = async (req, res) => {
 
 //      AVATARS
 const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
   const { path: tempUpload, originalname } = req.file;
   const resultUpload = path.join(avatarsPath, originalname);
   await fs.rename(tempUpload, resultUpload);
   const avatarURL = path.join("avatars", originalname);
   await User.findByIdAndUpdate(_id, { avatarURL });
+  console.log(updateAvatar);
 
   const avatar = await Jimp.read(resultUpload);
   avatar.resize(250, 250).writeAsync(resultUpload);
