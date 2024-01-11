@@ -18,6 +18,7 @@ const signup = async (req, res) => {
   if (user) {
     throw HttpError(409, "Email in use");
   }
+
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarUrl = gravatar.url(email);
   const newUser = await User.create({
@@ -87,11 +88,15 @@ const signout = async (req, res) => {
 const updateAvatar = async (req, res) => {
   const { _id } = req.user;
   const { path: tempUpload, originalname } = req.file;
+
+  if (!req.file) {
+    throw HttpError(400, "File is undefined");
+  }
   const resultUpload = path.join(avatarsPath, originalname);
+  console.log(resultUpload);
   await fs.rename(tempUpload, resultUpload);
   const avatarURL = path.join("avatars", originalname);
   await User.findByIdAndUpdate(_id, { avatarURL });
-
   const avatar = await Jimp.read(resultUpload);
   avatar.resize(250, 250).writeAsync(resultUpload);
 
