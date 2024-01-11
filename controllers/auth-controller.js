@@ -86,14 +86,13 @@ const signout = async (req, res) => {
 
 //      AVATARS
 const updateAvatar = async (req, res) => {
-  const { _id } = req.user;
-  const { path: tempUpload, originalname } = req.file;
-
   if (!req.file) {
     throw HttpError(400, "File is undefined");
   }
+  const { _id } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+
   const resultUpload = path.join(avatarsPath, originalname);
-  console.log(resultUpload);
   await fs.rename(tempUpload, resultUpload);
   const avatarURL = path.join("avatars", originalname);
   await User.findByIdAndUpdate(_id, { avatarURL });
