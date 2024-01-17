@@ -16,7 +16,7 @@ const nodemailerConfig = {
 const transport = nodemailer.createTransport(nodemailerConfig);
 
 const data = {
-  to: "mespocukka@gufum.com",
+  to: "anton.alipov791@ukr.net",
   subject: "Test email",
   html: "<strong>Hello</strong>",
 };

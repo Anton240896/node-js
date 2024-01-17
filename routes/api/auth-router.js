@@ -7,7 +7,6 @@ import {
 } from "../../models/User.js";
 
 import { isEmptyBody, authenticate, upload } from "../../middlewares/index.js";
-
 import authController from "../../controllers/auth-controller.js";
 
 const authRouter = express.Router();
