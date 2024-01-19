@@ -63,10 +63,10 @@ const verify = async (req, res) => {
 };
 
 //       RESEND VERIFICATION
-const resendVerifyEmail = async (res, req) => {
+const resendVerifyEmail = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
-
+  1;
   if (!user) {
     throw HttpError(404, "User not found");
   }
